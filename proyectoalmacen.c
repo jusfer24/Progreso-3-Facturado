@@ -1,4 +1,5 @@
 #include <stdio.h>
+#define LONGITUD 10
 
 int leerEnteroEntre(char*,int,int);
 int leerEnteroPositivo(char*);
@@ -8,11 +9,15 @@ void editarLibro(char[][50], int[], float[], int);
 void agregarLibro(char[][50], int[], float[], int, int, int, int);
 void borrarLibro(char[][50], int[], float[], int);
 void mostrarmenu();
+void ingresarUsuario();
 
 int main(int argc, char const *argv[]) {
     int tamano, opcion, grade;
      int noma;
     printf("--> * Bienvenido a la Libreria Andina* <--\n");
+    char usuarioAp[50][50];
+    char usuarioN[50][50];
+    int cedula[LONGITUD];
     char nombres[50][50];  
     int cantidades[50];
     float precios[50];  
@@ -26,7 +31,7 @@ int main(int argc, char const *argv[]) {
                 printf("\n Inventario modificado:\n");
                 break;
             case 2:
-               borrarLibro(nombres, cantidades, precios, tamano);
+               ingresarUsuario();
                break;
              case 3:
                 editarLibro(nombres, cantidades, precios, noma);
@@ -78,7 +83,7 @@ void mostrarmenu(){
     printf("********************\n");
     printf("Menu de opciones:\n");
     printf("1. Agregar al Inventario\n");
-    printf("2. Imprimir Datos\n");
+    printf("2. Agregar Usuario\n");
     printf("3. Borrar Dato\n");
     printf("4. Cerrar\n");
     printf("********************\n");
@@ -102,26 +107,10 @@ void agregarLibro(char nombres[][50], int cantidades[], float precios[], int i, 
    
     tamano=noma;
     printf("-------------------------------------------------------------------");
-     fprintf(archivo,"%s %d\n",nombres[i],cantidades[i], precios[i]);
+     fprintf(archivo,"%s %d  %d$\n", nombres[i],cantidades[i], precios[i]);
     }
     fclose(archivo);
     }
-
-void borrarLibro(char nombres[][50], int cantidades[], float precios[], int tamano){
-    printf("-------------------------------------------------------------------\n");
-    int eliminar=0;
-    eliminar = leerEnteroEntre("Ingrese el numero de libro que desea eliminar: ", 0, tamano+1);
-    nombres[eliminar-1]=="null";
-    cantidades[eliminar-1]=0;
-    precios[eliminar-1]=0;
-    printf(" -----------------------------------------\n");
-    for (int i = 0; i < tamano; i++) {
-        if(i!=eliminar-1){
-            printf(" %i | %s | %i unidades | %.2f $\n", i , nombres[i], cantidades[i], precios[i]);
-        }
-    }  
-    printf("-------------------------------------------------------------------"); 
-}
 
 void editarLibro(char nombres[][50], int cantidades[], float precios[], int tamano) {
     printf("-------------------------------------------------------------------");
@@ -149,3 +138,30 @@ float leerFlotantePositivo(char* mensaje){
    return valor;
 }
 
+void ingresarUsuario(){
+    char usuarioAp[20][15];
+    char usuarioN[20][15];
+    int cedula[20];
+    int cant;
+    printf("Ingrese cuantos Usuarios va a registrar: ");
+    scanf("%d",&cant);
+    FILE *archivo;
+    archivo = fopen("Usuarios.txt","a");
+    if(archivo == NULL){
+        printf("No se abrio el archivo");
+        return;
+    }
+    for (int i = 0; i < cant; i++)
+    {
+         printf("-------------------------------------------------------------------");
+        printf("Ingrese el nombre: ");
+        scanf("%s",usuarioN[i]);
+         printf("Ingrese el apellido: ");
+        scanf("%s",usuarioAp[i]);
+        printf("Ingrese la cedula: ");
+        scanf("%d",&cedula[i]);
+        fprintf(archivo,"%s %s %d\n",usuarioN[i],usuarioAp[i],cedula[i]);
+         printf("-------------------------------------------------------------------");
+    }
+    fclose(archivo);
+    }
