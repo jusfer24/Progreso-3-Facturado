@@ -1,5 +1,7 @@
 #include <stdio.h>
+#include <string.h>
 #define LONGITUD 10
+#define LON 20
 
 int leerEnteroEntre(char*,int,int);
 int leerEnteroPositivo(char*);
@@ -10,6 +12,9 @@ void agregarLibro(char[][50], int[], float[], int, int, int, int);
 void borrarLibro(char[][50], int[], float[], int);
 void mostrarmenu();
 void ingresarUsuario();
+void buscarPosicion(const char* buscado, long* pos);
+void mostrarInformacionPosicion(long pos);
+
 
 int main(int argc, char const *argv[]) {
     int tamano, opcion, grade;
@@ -22,6 +27,8 @@ int main(int argc, char const *argv[]) {
     int cantidades[50];
     float precios[50];  
     int i=0;
+    char buscar[LON];
+    long posicion;
     do {
         mostrarmenu();
         opcion = leerEnteroEntre("Ingrese su opcion: ", 1, 4);
@@ -34,13 +41,21 @@ int main(int argc, char const *argv[]) {
                ingresarUsuario();
                break;
              case 3:
-                editarLibro(nombres, cantidades, precios, noma);
+                printf ("Ingrese el nombre de la persona que busca: ");
+                scanf("%s",buscar);
+                buscarPosicion(buscar,&posicion);
+                 if(posicion != -1){
+                    printf("\nEncontro");
+                    mostrarInformacionPosicion(posicion);
+                }else
+                    printf("\nNo Encontro");
                 break;
             case 4:
                 printf("Cerrando el programa...\n");
                 break;
             default:
                 printf("Opción inexistente.\n");
+                break;
         }
         
     } while (opcion != 4);
@@ -84,7 +99,7 @@ void mostrarmenu(){
     printf("Menu de opciones:\n");
     printf("1. Agregar al Inventario\n");
     printf("2. Agregar Usuario\n");
-    printf("3. Borrar Dato\n");
+    printf("3. Buscar Usuario\n");
     printf("4. Cerrar\n");
     printf("********************\n");
 }
@@ -107,22 +122,11 @@ void agregarLibro(char nombres[][50], int cantidades[], float precios[], int i, 
    
     tamano=noma;
     printf("-------------------------------------------------------------------");
-     fprintf(archivo,"%s %d  %d$\n", nombres[i],cantidades[i], precios[i]);
+     fprintf(archivo,"%s %d  %.2f\n", nombres[i],cantidades[i], precios[i]);
     }
     fclose(archivo);
     }
 
-void editarLibro(char nombres[][50], int cantidades[], float precios[], int tamano) {
-    printf("-------------------------------------------------------------------");
-    int edit;
-    edit = leerEnteroEntre("Ingrese el numero de libro que desea editar: ", 1, tamano);
-    printf("Ingrese el nuevo nombre  %d: ", edit);
-    scanf("%s", nombres[edit - 1]);
-    cantidades[edit - 1]=leerEnteroPositivo("Ingrese la nueva cantidad de libros: ");
-    precios[edit - 1]=leerFlotantePositivo("Ingrese el nuevo precio del libro: ");
-    printf("Editado con exito.\n");
-    printf("-------------------------------------------------------------------");
-}
 
 float leerFlotantePositivo(char* mensaje){
     float valor;
@@ -153,7 +157,7 @@ void ingresarUsuario(){
     }
     for (int i = 0; i < cant; i++)
     {
-         printf("-------------------------------------------------------------------");
+         printf("-------------------------------------------------------------------\n");
         printf("Ingrese el nombre: ");
         scanf("%s",usuarioN[i]);
          printf("Ingrese el apellido: ");
@@ -161,7 +165,46 @@ void ingresarUsuario(){
         printf("Ingrese la cedula: ");
         scanf("%d",&cedula[i]);
         fprintf(archivo,"%s %s %d\n",usuarioN[i],usuarioAp[i],cedula[i]);
-         printf("-------------------------------------------------------------------");
+         printf("-------------------------------------------------------------------\n");
     }
     fclose(archivo);
+ }
+void buscarPosicion(const char* buscado, long* pos){
+     FILE *archivo;
+    archivo = fopen("Usuarios.txt","r");
+    char usuarioAp[20];
+    int cedula;
+    *pos = 0;
+    if(archivo == NULL){//comprobar si el archivo fue abierto
+        printf("No se abrio el archivo");
+        return;
     }
+    fprintf(archivo, "Ingrese el nombre que desea buscar: ");
+    while(!feof(archivo)){
+        fscanf(archivo,"%s %d",usuarioAp,&cedula);
+        if(strcmp(usuarioAp,buscado)==0){
+            *pos = ftell(archivo) - 1;
+            fclose(archivo);
+            return;
+        }
+        /*devuelve el número de bytes desde el inicio hasta la posiciòn actual de puntero de archivo*/
+        *pos = ftell(archivo);
+    }
+    fclose(archivo);
+    *pos = -1;
+}
+void mostrarInformacionPosicion(long pos){
+  FILE *archivo;
+    archivo = fopen("Usuarios.txt","r");
+    char usu[20];
+    int cedula;
+    if(archivo == NULL){//comprobar si el archivo fue abierto
+        printf("No se abrio el archivo");
+        return;
+    }
+    
+    fseek(archivo,pos,SEEK_SET);
+    fscanf(archivo,"%s %d",usu,&cedula);
+    printf("\n%s %d",usu,cedula);
+    fclose(archivo);
+}

@@ -6,3 +6,9 @@ L 4
 L 4
 Else 7
 Diario 7
+Elman 5 0
+Eltren 9 0
+Elsr 5  0$
+Srel 8  0$
+l 4  0
+l 4  5.000000
