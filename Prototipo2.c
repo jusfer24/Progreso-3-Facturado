@@ -15,6 +15,7 @@ void agregarLibro(char[][50], int[], float[], int, int, int);
 void buscarPosicion(const char* buscado, long* pos);
 void Infolibros(long pos);
 void eliminarLibro();
+void modificarInfolibros(long);
 
 void menuUsu();
 void controlUsuario(char[][50] ,char[][50], int[],char[],long);
@@ -22,6 +23,7 @@ void ingresarUsuario();
 void buscarUsu(int buscado, long* pos);
 void mostrarInfoUsu(long pos);
 void eliminarUsuario();
+void modificarInfoUsu(long);
 
 int main(int argc, char const *argv[]) {
     int tamano, opcion, grade;
@@ -138,7 +140,14 @@ void controlInventario(char libros[][50], int cantidades[], float precios[], int
                 break;
             case 4:
                 printf("//-----------------/-----------------//\n");
-               
+                printf ("Ingrese producto que busca: ");
+                scanf("%s",buscar);
+                buscarPosicion(buscar,&posicion);
+                 if(posicion != -1){
+                    printf("\nEncontrado\n");
+                    modificarInfolibros(posicion);
+                }else
+                    printf("No se encontro\n");
                 printf("//-----------------/-----------------//\n");
                 break;
             case 5:
@@ -226,6 +235,41 @@ void Infolibros(long pos) {
     fclose(archivo);
 }
 
+void modificarInfolibros(long pos) {
+    FILE *archivo;
+    archivo = fopen("libros.txt", "r+");
+    char libro[50];
+    int cantidades;
+    float precios;
+    
+    char nuevolibro[50];
+    int nuevocantidades;
+    float nuevoprecios;
+
+    if (archivo == NULL) {
+        printf("No se pudo abrir el archivo\n");
+        return;
+    }
+    
+    fseek(archivo, pos, SEEK_SET);
+    fscanf(archivo, "%s %d %f", libro, &cantidades, &precios);
+    printf("\nLibro actual: %s\nCantidad actual: %d\nPrecio actual: %.2f\n", libro, cantidades, precios);
+
+    printf("Ingrese el nuevo libro: ");
+    scanf("%s", nuevolibro);
+    printf("Ingrese la nueva cantidad: ");
+    scanf("%d", &nuevocantidades);
+    printf("Ingrese el nuevo precio: ");
+    scanf("%f", &nuevoprecios);
+
+    // Regresar al inicio de la posición para sobrescribir los datos
+    fseek(archivo, pos, SEEK_SET);
+    fprintf(archivo, "%s %d %.2f$\n", nuevolibro, nuevocantidades, nuevoprecios);
+
+    fclose(archivo);
+    printf("Información modificada correctamente.\n");
+}
+
 
 void eliminarLibro() {
     char nombreLibro[50];
@@ -277,6 +321,7 @@ void menuUsu(){
     printf("[1] Ingresar Usuario\n");
     printf("[2] Eliminar Usuario\n");
     printf("[3] Consultar Usuario\n");
+    printf("[4] Modificar Usuario\n");
     printf("[4] Regresar a Menu Principal\n");
 }
 
@@ -314,6 +359,19 @@ void controlUsuario(char usuarioN[][50], char usuarioAp[][50], int cedula[], cha
                 printf("//-----------------//-----------------//\n");
                 break;
             case 4:
+                printf("//-----------------//-----------------//\n");
+                printf("Ingrese la cédula de la persona que desea modificar: ");
+                scanf("%d", &cedulaBuscada);
+                buscarUsu(cedulaBuscada,&posicion);
+                if (posicion != -1) {
+                    printf("\nUsuario encontrado\n");
+                    modificarInfoUsu(posicion);
+                } else {
+                    printf("\n");
+                }
+                 printf("//-----------------//-----------------//\n");
+                break;
+            case 5:
                 printf("------------------------------------\n");
                 sleep(1);
                 printf("Regresando");
@@ -331,7 +389,7 @@ void controlUsuario(char usuarioN[][50], char usuarioAp[][50], int cedula[], cha
                 printf("!!!!!!!!!!!!!!!!!!!!!!\n");
                 break;
         }
-    } while (usuent != 4);
+    } while (usuent != 5);
 }
 
 void ingresarUsuario(){
@@ -483,3 +541,38 @@ void eliminarUsuario() {
     else
         printf("Usuario no encontrado.\n");
 }
+
+void modificarInfoUsu(long pos) {
+    FILE *archivo;
+    archivo = fopen("Usuarios.txt", "r+");
+    char nombre[50];
+    char apellido[50];
+    int cedula;
+    char nuevoNombre[50];
+    char nuevoApellido[50];
+    int nuevaCedula;
+
+    if (archivo == NULL) {
+        printf("No se pudo abrir el archivo\n");
+        return;
+    }
+    
+    fseek(archivo, pos, SEEK_SET);
+    fscanf(archivo, "%s %s %d", nombre, apellido, &cedula);
+    printf("\nApellido actual: %s\nNombre actual: %s\nCédula actual: %d\n", apellido, nombre, cedula);
+
+    printf("Ingrese el nuevo apellido: ");
+    scanf("%s", nuevoApellido);
+    printf("Ingrese el nuevo nombre: ");
+    scanf("%s", nuevoNombre);
+    printf("Ingrese la nueva cédula: ");
+    scanf("%d", &nuevaCedula);
+
+    // Regresar al inicio de la posición para sobrescribir los datos
+    fseek(archivo, pos, SEEK_SET);
+    fprintf(archivo, "%s %s %d\n", nuevoNombre, nuevoApellido, nuevaCedula);
+
+    fclose(archivo);
+    printf("Información modificada correctamente.\n");
+}
+

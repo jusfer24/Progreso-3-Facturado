@@ -2,6 +2,6 @@ Elvisitante 5 10.00$
 Laotragente 5 11.50$
 Theyboys 9 10.00$
 Almanaque 1 100.00$
-Back 5 40.00$
-LosCinco 1 12.00$
-Tolkien 12 40.00$
+BackToF 6 41.00$
+Cinco 2 13.00$
+
