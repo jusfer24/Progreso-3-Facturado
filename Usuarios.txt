@@ -1,7 +1,11 @@
-Luis Vasquez 402772993
-Adrian Cazares 1011207550
-Anthony Cruz 2147483647
+Luis Vasquez 498
+Adrian Cazares 10
+Anthony Cruz 21
 Justin Basantes 19
 Carlos Lopez 20
 Norma Andla 45
 Pablo Guerra 23
+Peter Parker 21
+Leon Kenedy 12
+JRR Tolkien 12
+Tomas Aquino 97
