@@ -5,13 +5,11 @@
 #include "usuarios.h"
 #include "inventario.h"
 
-
 #define LONGITUD 10
 #define LON 20
-#define cont 0
 #define MAX_LIBROS 50
 
-void ingresarfactura();
+    void ingresarfactura();
     char libros[MAX_LIBROS][50];
     int cantidades[MAX_LIBROS];
     float precios[MAX_LIBROS];
@@ -55,7 +53,8 @@ int main(int argc, char const *argv[]) {
                 break;
             case 3:
                 printf("------------------------------------\n"); 
-                ingresarfactura(libros, cantidades, precios, &cantidadLibros);
+                   ingresarfactura();
+                
                 printf("------------------------------------\n");
                 break;
             case 4:
@@ -89,6 +88,8 @@ int main(int argc, char const *argv[]) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /******** *//******** *//******** *//******** *//******** *//******** *//******** *//******** *//******** *//******** *//******** *//******** */
 
+
+
 void ingresarfactura(){
     time_t t = time(NULL); //Obténiene el tiempo actual
      // Convierte el tiempo a una estructura de tiempo local
@@ -99,16 +100,15 @@ void ingresarfactura(){
     char libronom[15];
     int cantidad;
     float precio;
-    char des[4];
+    int des;
     char nombre[50];
     float pagado;
-    int *newcont;
+    int newcont;
     printf("\nIngrese los datos a la factura: ");
-    FILE *archivof = fopen("Facturas.txt", "w");
-    FILE *archivo = fopen("libros.txt", "r");
-    FILE *archivotemp = fopen("librostem.txt", "w");
-    if (archivo == NULL || archivof == NULL || archivotemp == NULL) {
-        printf("No se pudo abrir el archivo");
+    FILE *archivofac = fopen("facturas.txt", "a");
+    
+    if ((archivofac == NULL)) {
+        printf("\nNo se pudo abrir el archivo");
         return;
     }
     do {
@@ -126,38 +126,25 @@ void ingresarfactura(){
             scanf("%d", &cantidad);
             printf("\nIngrese el precio del libro: ");
             scanf("%f", &precio);
-            //Para bajar el stock en el inventario
-            while (fscanf(archivo, "%s %d %f", nombre, &cantidad, &precio) != EOF) {
-                if (strcmp(nombre, libronom) == 0) {
-                    fprintf(archivotemp, "%s %d %.2f\n", nombre, cantidad-1, precio);
-                    continue; // Omitir la escritura de este libro al archivo temporal
-                }
-            fprintf(archivotemp, "%s %d %.2f\n", nombre, cantidad, precio);
-            }
-            fclose(archivo);
-            fclose(archivotemp);
-            remove("libros.txt");
-            rename("librostem.txt", "libros.txt");
-        }while(cantidad != 0);
+        }while(cantidad == 0);
         do{
             printf("Ingrese el dinero pagado: ");
             scanf("%f", &pagado);
-        } while (pagado >= precio);
-        printf("\n Los datos ingresados estan bien?");
-        scanf("%s", des);
+        } while (pagado < (precio*cantidad));
+        printf("\nLos datos ingresados estan bien?(Si:1/No:2) ");
+        scanf("%d", &des);
         printf("\n-------------------------------------------------------------------\n");
-    } while (des == "si");
-    *newcont=cont+1;
-    fprintf(archivof, "\n      --> la Libreria Andina <--\n");
-    fprintf(archivof, "Establecimiento: Quito Norte\n");
-    fprintf(archivof, "Ref Factura No: 0%d", *newcont);
-    fprintf(archivof, "Fecha actual: %02d-%02d-%d\n", tm.tm_mday, tm.tm_mon + 1, tm.tm_year + 1900);//Imprime la fecha actual en formato dd-mm-yyyy
-    fprintf(archivof, "Usuario: %s %s\n", usuarioN, usuarioAp);
-    fprintf(archivof, "RUC/Cedula: %d", cedula);
-    fprintf(archivof, "Descripcion CANT PREC TOTAL\n");
-    fprintf(archivof, "%s %d %.2f %.2f\n", libronom, cantidad, precio, cantidad*precio);
-    fprintf(archivof, "EFECTIVO              %.2f\n", pagado);
-    fprintf(archivof, "CAMBIO                %.2f\n", pagado-precio);
-    fprintf(archivof,"-------------------------------------------------------------------\n");
-    fclose(archivof);
+    } while (des != 1);
+    fprintf(archivofac, "\n      --> la Libreria Andina <--\n");
+    fprintf(archivofac, "Establecimiento: Quito Norte\n");
+    fprintf(archivofac, "Ref Factura No: 0%d", newcont);
+    fprintf(archivofac, "\nFecha actual: %02d-%02d-%d\n", tm.tm_mday, tm.tm_mon + 1, tm.tm_year + 1900);//Imprime la fecha actual en formato dd-mm-yyyy
+    fprintf(archivofac, "Usuario: %s %s\n", usuarioN, usuarioAp);
+    fprintf(archivofac, "RUC/Cedula: %d", cedula);
+    fprintf(archivofac, "\nDescripcion CANT PREC TOTAL\n");
+    fprintf(archivofac, "%-13s %d %.2f %.2f\n", libronom, cantidad, precio, cantidad*precio);
+    fprintf(archivofac, "EFECTIVO              %.2f\n", pagado);
+    fprintf(archivofac, "CAMBIO                %.2f\n", pagado-(precio*cantidad));
+    fprintf(archivofac,"-------------------------------------------------------------------\n");
+    fclose(archivofac);
 }
